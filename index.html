@@ -56,6 +56,12 @@
         background-attachment: fixed;
         margin: 0; overflow: hidden;
         -webkit-font-smoothing: antialiased;
+
+        /* --- 页面默认缩放 90% --- */
+        zoom: 0.9; 
+        -moz-transform: scale(0.9);
+        -moz-transform-origin: center top;
+        width: 100%;
       }
       .glass-card {
         background: rgba(255, 255, 255, 0.85);
@@ -94,10 +100,9 @@
         // 初始化 jsPsych
         const jsPsych = initJsPsych();
 
-        // --- Supabase 配置 ---
+        // --- Supabase 配置 (已更新为你提供的正确 Key) ---
         const supabaseUrl = 'https://zhhchgkusqcplljrqqut.supabase.co';
-        // 使用你提供的 Key。如果控制台报错 401，请尝试使用 Supabase 后台提供的 "anon public" Key (以 eyJ 开头)
-        const supabaseKey = 'sb_publishable_9aY9nW_AA0Rt5Om6iSSV6Q_1awd7EA4';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoaGNoZ2t1c3FjcGxsanJxcXV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODI5MTIsImV4cCI6MjA4MDI1ODkxMn0.jmX-Tm9hCxqh5g-rUZTzzEUvg2IJBEySm1XAJ08t-f4';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
         
         const { useState, useEffect, useRef } = React;
@@ -562,7 +567,7 @@
                 {appStage === 'END' && (
                     <div className="glass-card p-10 text-center shadow-2xl rounded-3xl animate-pop-in">
                         <h2 className="text-3xl font-bold text-emerald-500 mb-2">🎉 实验结束</h2>
-                        <p className="text-slate-500 mb-8 font-medium">数据已自动上传。</p>
+                        <p className="text-slate-500 mb-8 font-medium">数据已自动上传，感谢您的参与。</p>
                         <div className="text-xs text-slate-400">您可以直接关闭此页面。</div>
                     </div>
                 )}
