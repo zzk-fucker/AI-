@@ -56,7 +56,6 @@
         background-attachment: fixed;
         margin: 0; overflow: hidden;
         -webkit-font-smoothing: antialiased;
-        /* 已恢复默认设置，保证完美居中 */
       }
       .glass-card {
         background: rgba(255, 255, 255, 0.85);
@@ -89,16 +88,15 @@
         <div class="absolute bottom-0 left-20 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
     </div>
 
-    <!-- 这里的 scale-90 是为了在不破坏居中的前提下，让内容稍微缩小一点点，显得更精致。如果觉得太小，可以删掉 scale-90 -->
-    <div id="root" class="w-full h-full flex items-center justify-center p-4 scale-90 transition-transform duration-300"></div>
+    <div id="root" class="w-full h-full flex items-center justify-center p-4"></div>
 
     <script type="text/babel">
         // 初始化 jsPsych
         const jsPsych = initJsPsych();
 
-        // --- Supabase 配置 (已更新为正确的 Anon Key) ---
+        // --- Supabase 配置 ---
         const supabaseUrl = 'https://zhhchgkusqcplljrqqut.supabase.co';
-        // 使用 eyJ 开头的 Key，这是最重要的修改
+        // 已替换为正确的 Anon Key (eyJ开头)
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoaGNoZ2t1c3FjcGxsanJxcXV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODI5MTIsImV4cCI6MjA4MDI1ODkxMn0.jmX-Tm9hCxqh5g-rUZTzzEUvg2IJBEySm1XAJ08t-f4';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
         
@@ -564,7 +562,7 @@
                 {appStage === 'END' && (
                     <div className="glass-card p-10 text-center shadow-2xl rounded-3xl animate-pop-in">
                         <h2 className="text-3xl font-bold text-emerald-500 mb-2">🎉 实验结束</h2>
-                        <p className="text-slate-500 mb-8 font-medium">数据已自动上传，感谢您的参与。</p>
+                        <p className="text-slate-500 mb-8 font-medium">数据已自动上传，感谢参与。</p>
                         <div className="text-xs text-slate-400">您可以直接关闭此页面。</div>
                     </div>
                 )}
