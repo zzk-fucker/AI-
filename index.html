@@ -56,12 +56,7 @@
         background-attachment: fixed;
         margin: 0; overflow: hidden;
         -webkit-font-smoothing: antialiased;
-
-        /* --- 页面默认缩放 90% --- */
-        zoom: 0.9; 
-        -moz-transform: scale(0.9);
-        -moz-transform-origin: center top;
-        width: 100%;
+        /* 已恢复默认设置，保证完美居中 */
       }
       .glass-card {
         background: rgba(255, 255, 255, 0.85);
@@ -94,14 +89,16 @@
         <div class="absolute bottom-0 left-20 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
     </div>
 
-    <div id="root" class="w-full h-full flex items-center justify-center p-4"></div>
+    <!-- 这里的 scale-90 是为了在不破坏居中的前提下，让内容稍微缩小一点点，显得更精致。如果觉得太小，可以删掉 scale-90 -->
+    <div id="root" class="w-full h-full flex items-center justify-center p-4 scale-90 transition-transform duration-300"></div>
 
     <script type="text/babel">
         // 初始化 jsPsych
         const jsPsych = initJsPsych();
 
-        // --- Supabase 配置 (已更新为你提供的正确 Key) ---
+        // --- Supabase 配置 (已更新为正确的 Anon Key) ---
         const supabaseUrl = 'https://zhhchgkusqcplljrqqut.supabase.co';
+        // 使用 eyJ 开头的 Key，这是最重要的修改
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoaGNoZ2t1c3FjcGxsanJxcXV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODI5MTIsImV4cCI6MjA4MDI1ODkxMn0.jmX-Tm9hCxqh5g-rUZTzzEUvg2IJBEySm1XAJ08t-f4';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
         
