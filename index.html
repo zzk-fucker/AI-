@@ -302,7 +302,8 @@
           }, [chatHistory, sessionPhase]);
 
           const initExperiment = () => {
-            const order = ['AI', 'HUMAN']; 
+            // 修改点：随机决定是先AI还是先真人，打破固定分配
+            const order = Math.random() < 0.5 ? ['AI', 'HUMAN'] : ['HUMAN', 'AI']; 
             setBlockOrder(order);
             setCurrentBlockIndex(0);
             setTrialsInBlock(0);
@@ -323,6 +324,7 @@
             setCognitiveVal(50);
             setAffectiveVal(50);
             
+            // 确保从未使用过的问题中随机抽取，避免重复
             const available = TOPICS.filter(topic => !usedTopicIds.includes(topic.id));
             const shuffled = [...available].sort(() => 0.5 - Math.random());
             setCurrentChoices(shuffled.slice(0, 3));
