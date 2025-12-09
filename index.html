@@ -88,6 +88,7 @@
         <div class="absolute bottom-0 left-20 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
     </div>
 
+    <!-- 根节点 -->
     <div id="root" class="w-full h-full flex items-center justify-center p-4"></div>
 
     <script type="text/babel">
@@ -104,6 +105,14 @@
         // --- 配置 ---
         const TRIALS_PER_BLOCK = 10; 
         const BGM_URL = "./bgm.mp3"; 
+
+        // --- 问卷题目 ---
+        const SURVEY_QUESTIONS = [
+            { id: "q1", text: "如果心理咨询师是人工智能，我会感到不安。", type: "scale" },
+            { id: "q2", text: "我相信人工智能的判断比人类更客观。", type: "scale" }, 
+            { id: "q3", text: "我认为人工智能永远无法真正理解人类的情感。", type: "scale" },
+            { id: "q4", text: "总体而言，我是一个乐于接受新技术的人。", type: "scale" }
+        ];
 
         // --- 内部合成音效 ---
         const playSynthSound = (type) => {
@@ -151,16 +160,16 @@
             style: "Empathy", 
             optionLabel: "🎮 室友半夜吵闹", 
             userText: "室友每天半夜打游戏大喊大叫，我说了好几次他都不听，我快神经衰弱了。", 
-            aiReply: "在那样的环境里，每一分钟的忍耐都在消耗你的能量吧。明明这里也是你的家，却连最基本的安宁都守不住，这种无处可逃的窒息感，真的太煎熬了。", 
-            humanReply: "在那样的环境里，每一分钟的忍耐都在消耗你的能量吧。明明这里也是你的家，却连最基本的安宁都守不住，这种无处可逃的窒息感，真的太煎熬了。"
+            aiReply: "我非常理解这种被打扰的烦躁感。毕竟宿舍是你休息的地方，在自己的空间里还要被迫忍受噪音，换做谁都会觉得很委屈吧。这种想发火又怕撕破脸的纠结，确实太折磨人了。", 
+            humanReply: "我非常理解这种被打扰的烦躁感。毕竟宿舍是你休息的地方，在自己的空间里还要被迫忍受噪音，换做谁都会觉得很委屈吧。这种想发火又怕撕破脸的纠结，确实太折磨人了。"
           },
           {
             id: "t3", 
             style: "Empathy", 
             optionLabel: "📚 考研二战失败", 
             userText: "考研二战失败了，看着同学们都工作升职了，感觉自己这几年白活了。", 
-            aiReply: "听得出来，你现在一定觉得心里空荡荡的。看着别人都在轨道上飞驰，自己却仿佛被世界遗忘在了原地。这两年你在这个梦想里倾注了全部的自己，现在的失落，是对你付出最好的证明。", 
-            humanReply: "听得出来，你现在一定觉得心里空荡荡的。看着别人都在轨道上飞驰，自己却仿佛被世界遗忘在了原地。这两年你在这个梦想里倾注了全部的自己，现在的失落，是对你付出最好的证明。"
+            aiReply: "听到你这么说，真的很心疼。那种看着同龄人往前走、自己却留在原地的落差感，确实太让人难受了。这两年你付出了那么多，现在感到迷茫和失落，是完全正常的反应。", 
+            humanReply: "听到你这么说，真的很心疼。那种看着同龄人往前走、自己却留在原地的落差感，确实太让人难受了。这两年你付出了那么多，现在感到迷茫和失落，是完全正常的反应。"
           },
           {
             id: "t4", 
@@ -175,8 +184,8 @@
             style: "Empathy", 
             optionLabel: "🏠 父母逼我考公", 
             userText: "父母非要我回老家考公务员，可我想留在大城市，每天都在吵架。", 
-            aiReply: "这真的很让人撕裂。一边是不想辜负父母的期待，一边是无法放弃的自我渴望。每一句争吵背后，其实都是你想要被看见、被认可的呐喊吧。", 
-            humanReply: "这真的很让人撕裂。一边是不想辜负父母的期待，一边是无法放弃的自我渴望。每一句争吵背后，其实都是你想要被看见、被认可的呐喊吧。"
+            aiReply: "我能感受到你现在的两难。父母想要的是安稳，而你想要的是自我实现，这两种爱撞在一起，确实让人很难抉择。夹在‘孝顺’和‘梦想’中间的你，一定承担了很大的压力吧。", 
+            humanReply: "我能感受到你现在的两难。父母想要的是安稳，而你想要的是自我实现，这两种爱撞在一起，确实让人很难抉择。夹在‘孝顺’和‘梦想’中间的你，一定承担了很大的压力吧。"
           },
           {
             id: "t6", 
@@ -191,8 +200,8 @@
             style: "Empathy", 
             optionLabel: "📱 男友不回消息", 
             userText: "男朋友玩游戏从来不回我消息，因为这个吵了很多次，心很累。", 
-            aiReply: "那种盯着屏幕等待、直到心一点点凉下去的感觉，真的好孤单。你一次次争吵，其实只是想确认：‘我在你心里，依然是重要的’，对吗？", 
-            humanReply: "那种盯着屏幕等待、直到心一点点凉下去的感觉，真的好孤单。你一次次争吵，其实只是想确认：‘我在你心里，依然是重要的’，对吗？"
+            aiReply: "其实你争的不是回消息，而是那种‘被放在心上’的感觉啊。总是被排在游戏后面，觉得自己像个第二选项，这种失落感才是最让你扎心的地方吧。", 
+            humanReply: "其实你争的不是回消息，而是那种‘被放在心上’的感觉啊。总是被排在游戏后面，觉得自己像个第二选项，这种失落感才是最让你扎心的地方吧。"
           },
           {
             id: "t8", 
@@ -207,16 +216,16 @@
             style: "Empathy", 
             optionLabel: "💸 工资只够房租", 
             userText: "每个月工资交完房租就没剩多少了，不敢社交不敢生病，是在生存不是生活。", 
-            aiReply: "在这个庞大的城市里，这种‘摇摇欲坠’的不安全感太真实了。不敢病、不敢停、甚至不敢快乐，你一直绷着一根弦在生活，真的辛苦了。", 
-            humanReply: "在这个庞大的城市里，这种‘摇摇欲坠’的不安全感太真实了。不敢病、不敢停、甚至不敢快乐，你一直绷着一根弦在生活，真的辛苦了。"
+            aiReply: "在这个城市扎根真的太不容易了。看着万家灯火却没有一盏属于自己，那种每一步都必须小心翼翼、经不起一点风吹草动的脆弱感，真的会让人觉得很孤单、很无助。", 
+            humanReply: "在这个城市扎根真的太不容易了。看着万家灯火却没有一盏属于自己，那种每一步都必须小心翼翼、经不起一点风吹草动的脆弱感，真的会让人觉得很孤单、很无助。"
           },
           {
             id: "t10", 
             style: "Empathy", 
             optionLabel: "💔 暗恋的人有对象", 
             userText: "暗恋那个男生很久了，最近发现他好像有喜欢的人了，只能偷偷哭。", 
-            aiReply: "这就像是一场还没开始就已经落幕的电影。心里明明下着大雨，面上却还要若无其事。这份喜欢你小心翼翼珍藏了这么久，现在的眼泪，是在替那个付出的自己委屈吧。", 
-            humanReply: "这就像是一场还没开始就已经落幕的电影。心里明明下着大雨，面上却还要若无其事。这份喜欢你小心翼翼珍藏了这么久，现在的眼泪，是在替那个付出的自己委屈吧。"
+            aiReply: "这种感觉真的太苦涩了。明明心里翻江倒海，面上还得装作若无其事，连吃醋都没有身份。这份喜欢你珍藏了这么久，现在的难过也是因为它真的很珍贵啊。", 
+            humanReply: "这种感觉真的太苦涩了。明明心里翻江倒海，面上还得装作若无其事，连吃醋都没有身份。这份喜欢你珍藏了这么久，现在的难过也是因为它真的很珍贵啊。"
           },
           
           // --- 2. 自我/情绪类 ---
@@ -527,21 +536,25 @@
           const [interactions, setInteractions] = useState([]);
           const [turingData, setTuringData] = useState([]);
           const [turingIndex, setTuringIndex] = useState(0);
-          const chatEndRef = useRef(null);
+          
+          // 新增：问卷数据状态
+          const [surveyData, setSurveyData] = useState({});
 
+          const chatEndRef = useRef(null);
           const [musicOn, setMusicOn] = useState(true);
           const [sfxOn, setSfxOn] = useState(true);
           const audioRef = useRef(null);
 
           // 新增：上传数据函数
-          const uploadData = async (finalInteractions, finalTuringData) => {
+          const uploadData = async (finalInteractions, finalTuringData, finalSurveyData) => {
               console.log("Starting data upload...");
               try {
                   const { data, error } = await supabase
                       .from('experiment_results')
                       .insert({
                           interactions: finalInteractions,
-                          turing_test: finalTuringData
+                          turing_test: finalTuringData,
+                          survey: finalSurveyData // 上传问卷数据
                       });
                   
                   if (error) {
@@ -564,7 +577,7 @@
 
           useEffect(() => {
               if (!audioRef.current) return;
-              if (musicOn && appStage !== 'WELCOME' && appStage !== 'END') {
+              if (musicOn && appStage !== 'WELCOME' && appStage !== 'END' && appStage !== 'SURVEY') {
                   audioRef.current.play().catch(e => {
                       console.log("Audio waiting for interaction");
                   });
@@ -587,9 +600,6 @@
           }, [chatHistory, sessionPhase]);
 
           const initExperiment = () => {
-            // --- 核心修改点：随机决定是先AI还是先真人 ---
-            // 谁先被抽到，谁就是阶段一。
-            // 50%的概率是 AI -> HUMAN, 50%的概率是 HUMAN -> AI
             const order = Math.random() < 0.5 ? ['AI', 'HUMAN'] : ['HUMAN', 'AI']; 
             
             setBlockOrder(order);
@@ -612,8 +622,6 @@
             setCognitiveVal(50);
             setAffectiveVal(50);
             
-            // 确保从未使用过的问题中随机抽取，避免重复
-            // available 计算的是：总题库 - 已经选过的问题
             const available = TOPICS.filter(topic => !usedTopicIds.includes(topic.id));
             const shuffled = [...available].sort(() => 0.5 - Math.random());
             setCurrentChoices(shuffled.slice(0, 3));
@@ -699,13 +707,25 @@
             if (turingIndex < turingData.length - 1) {
                 setTuringIndex(prev => prev + 1);
             } else {
-                // 实验结束：触发上传
-                uploadData(interactions, updated);
-                setAppStage('END');
+                // 图灵测试结束，进入问卷阶段 (逻辑修改点 1)
+                setAppStage('SURVEY');
             }
           };
 
+          // 新增：问卷提交逻辑
+          const handleSurveySubmit = () => {
+              if(Object.keys(surveyData).length < SURVEY_QUESTIONS.length) {
+                  alert("请先完成所有题目哦");
+                  return;
+              }
+              
+              // 提交问卷后，统一上传数据
+              uploadData(interactions, turingData, surveyData);
+              setAppStage('END');
+          };
+
           // --- UI 渲染 ---
+          // 修改点：整个界面缩放 90% (scale-90)
           return (
             <>
                 <SettingsPanel 
@@ -715,149 +735,195 @@
                     toggleSfx={() => setSfxOn(!sfxOn)} 
                 />
 
-                {appStage === 'WELCOME' && (
-                    <div className="glass-card p-10 max-w-lg text-center shadow-xl border border-white/60 rounded-3xl animate-pop-in">
-                        <div className="text-6xl mb-6 animate-bounce">🧠</div>
-                        <h1 className="text-3xl font-bold text-slate-800 mb-2">人机交互心理研究</h1>
-                        <p className="text-slate-500 mb-8 font-medium">探索 AI 与人类咨询师回复给人的心理感受差异。</p>
-                        <div className="bg-white/50 rounded-2xl p-6 text-left text-sm mb-8 border border-white/50 shadow-inner">
-                          <strong className="block mb-3 text-indigo-600 font-bold uppercase tracking-wider text-xs">📚 实验说明</strong>
-                          <ul className="space-y-2 text-slate-600 list-disc list-inside">
-                            <li>实验分为两个阶段 (AI的回答 / 真人的回答)，各 10 题。</li>
-                            <li><strong>阶段出现的顺序由系统随机抽取决定。</strong></li>
-                            <li>请从给出的话题中选择你感兴趣的提问。</li>
-                            <li>收到回复后，请凭直觉评价理解度和温度。</li>
-                          </ul>
-                        </div>
-                        <button onClick={initExperiment} className="w-full py-4 bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 transition transform hover:-translate-y-0.5 active:scale-95">开始实验</button>
-                    </div>
-                )}
-
-                {appStage === 'BLOCK_INTRO' && (
-                    <div className="glass-card p-12 max-w-md text-center shadow-2xl rounded-3xl animate-pop-in">
-                        <div className="text-8xl mb-6 transform transition duration-500 hover:scale-110 cursor-default">{blockOrder[currentBlockIndex] === 'AI' ? "🤖" : "👨‍⚕️"}</div>
-                        <h2 className={`text-2xl font-bold mb-4 ${blockOrder[currentBlockIndex] === 'AI' ? "text-indigo-600" : "text-amber-600"}`}>
-                            {blockOrder[currentBlockIndex] === 'AI' ? "阶段 1 / 2 : 智能 AI 助手" : `阶段 2 / 2 : 真人咨询师`}
-                        </h2>
-                        <p className="text-slate-600 mb-8 text-lg font-medium">
-                            {blockOrder[currentBlockIndex] === 'AI' ? "接下来，你将与一位 AI 智能模型进行对话。" : "接下来，你将与一位资深心理咨询师进行对话。"}
-                        </p>
-                        <button onClick={startBlock} className="px-10 py-3 bg-white border border-indigo-100 hover:border-indigo-300 text-indigo-900 rounded-full font-bold shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5">进入聊天</button>
-                    </div>
-                )}
-
-                {appStage === 'CHAT_SESSION' && (
-                    <div className="w-full max-w-md h-[90vh] sm:h-[700px] flex flex-col relative z-10 animate-pop-in">
-                        <div className="glass-card w-full h-full flex flex-col !p-0 overflow-hidden shadow-2xl border border-white/60 rounded-3xl">
-                            <div className="bg-white/70 backdrop-blur-md p-4 border-b border-white/40 flex items-center justify-center gap-2 shrink-0 shadow-sm z-20">
-                                <span className="text-2xl">{blockOrder[currentBlockIndex] === 'AI' ? "🤖" : "👨‍⚕️"}</span>
-                                <span className={`font-bold text-base ${blockOrder[currentBlockIndex] === 'AI' ? "text-indigo-600" : "text-amber-600"}`}>{blockOrder[currentBlockIndex] === 'AI' ? "AI 智能助手" : "资深咨询师"}</span>
+                <div className="w-full h-full flex items-center justify-center transform scale-90 origin-center transition-transform duration-300">
+                    
+                    {appStage === 'WELCOME' && (
+                        <div className="glass-card p-10 max-w-lg text-center shadow-xl border border-white/60 rounded-3xl animate-pop-in">
+                            <div className="text-6xl mb-6 animate-bounce">🧠</div>
+                            <h1 className="text-3xl font-bold text-slate-800 mb-2">人机交互心理研究</h1>
+                            <p className="text-slate-500 mb-8 font-medium">探索 AI 与人类咨询师回复给人的心理感受差异。</p>
+                            <div className="bg-white/50 rounded-2xl p-6 text-left text-sm mb-8 border border-white/50 shadow-inner">
+                            <strong className="block mb-3 text-indigo-600 font-bold uppercase tracking-wider text-xs">📚 实验说明</strong>
+                            <ul className="space-y-2 text-slate-600 list-disc list-inside">
+                                <li>实验分为两个阶段 (AI / 真人)，各 10 题。</li>
+                                <li><strong>阶段出现的顺序由系统随机抽取决定。</strong></li>
+                                <li>请从给出的话题中选择你感兴趣的提问。</li>
+                                <li>收到回复后，请凭直觉评价理解度和温度。</li>
+                            </ul>
                             </div>
-                            <div className="flex-1 overflow-y-auto px-5 py-6 chat-scroll scroll-smooth bg-white/30">
-                                <div className="flex flex-col gap-6">
-                                {chatHistory.map((msg) => (
-                                    <div key={msg.id} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} animate-fade-up`}>
-                                        <span className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider mx-2">{msg.role === 'user' ? "我" : (blockOrder[currentBlockIndex] === 'AI' ? "AI 智能助手" : "资深咨询师")}</span>
-                                        {msg.isTyping ? (
-                                            <div className="px-4 py-3 rounded-2xl rounded-tl-none bg-white shadow-sm border border-white/60"><div className="flex gap-1.5 animate-pulse"><span className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></span><span className="w-1.5 h-1.5 bg-indigo-400 rounded-full" style={{animationDelay:'0.15s'}}></span><span className="w-1.5 h-1.5 bg-indigo-400 rounded-full" style={{animationDelay:'0.3s'}}></span></div></div>
-                                        ) : (
-                                            <div className={`px-5 py-3.5 rounded-2xl max-w-[85%] text-[15px] leading-relaxed shadow-md
-                                                ${msg.role === 'user' 
-                                                ? 'bg-white text-slate-700 border border-white/60 rounded-tr-none' 
-                                                : `text-white rounded-tl-none bg-gradient-to-br ${blockOrder[currentBlockIndex] === 'AI' ? "from-indigo-500 to-violet-500" : "from-amber-500 to-orange-500"}`
-                                                }`}>{msg.text}</div>
-                                        )}
+                            <button onClick={initExperiment} className="w-full py-4 bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 transition transform hover:-translate-y-0.5 active:scale-95">开始实验</button>
+                        </div>
+                    )}
+
+                    {appStage === 'BLOCK_INTRO' && (
+                        <div className="glass-card p-12 max-w-md text-center shadow-2xl rounded-3xl animate-pop-in">
+                            <div className="text-8xl mb-6 transform transition duration-500 hover:scale-110 cursor-default">{blockOrder[currentBlockIndex] === 'AI' ? "🤖" : "👨‍⚕️"}</div>
+                            <h2 className={`text-2xl font-bold mb-4 ${blockOrder[currentBlockIndex] === 'AI' ? "text-indigo-600" : "text-amber-600"}`}>
+                                {blockOrder[currentBlockIndex] === 'AI' ? "阶段 1 / 2 : 智能 AI 助手" : `阶段 2 / 2 : 真人咨询师`}
+                            </h2>
+                            <p className="text-slate-600 mb-8 text-lg font-medium">
+                                {blockOrder[currentBlockIndex] === 'AI' ? "接下来，你将与一位 AI 智能模型进行对话。" : "接下来，你将与一位资深心理咨询师进行对话。"}
+                            </p>
+                            <button onClick={startBlock} className="px-10 py-3 bg-white border border-indigo-100 hover:border-indigo-300 text-indigo-900 rounded-full font-bold shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5">进入聊天</button>
+                        </div>
+                    )}
+
+                    {appStage === 'CHAT_SESSION' && (
+                        <div className="w-full max-w-md h-[90vh] sm:h-[700px] flex flex-col relative z-10 animate-pop-in">
+                            <div className="glass-card w-full h-full flex flex-col !p-0 overflow-hidden shadow-2xl border border-white/60 rounded-3xl">
+                                <div className="bg-white/70 backdrop-blur-md p-4 border-b border-white/40 flex items-center justify-center gap-2 shrink-0 shadow-sm z-20">
+                                    <span className="text-2xl">{blockOrder[currentBlockIndex] === 'AI' ? "🤖" : "👨‍⚕️"}</span>
+                                    <span className={`font-bold text-base ${blockOrder[currentBlockIndex] === 'AI' ? "text-indigo-600" : "text-amber-600"}`}>{blockOrder[currentBlockIndex] === 'AI' ? "AI 智能助手" : "资深咨询师"}</span>
+                                </div>
+                                <div className="flex-1 overflow-y-auto px-5 py-6 chat-scroll scroll-smooth bg-white/30">
+                                    <div className="flex flex-col gap-6">
+                                    {chatHistory.map((msg) => (
+                                        <div key={msg.id} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} animate-fade-up`}>
+                                            <span className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider mx-2">{msg.role === 'user' ? "我" : (blockOrder[currentBlockIndex] === 'AI' ? "AI 智能助手" : "资深咨询师")}</span>
+                                            {msg.isTyping ? (
+                                                <div className="px-4 py-3 rounded-2xl rounded-tl-none bg-white shadow-sm border border-white/60"><div className="flex gap-1.5 animate-pulse"><span className="w-1.5 h-1.5 bg-indigo-400 rounded-full"></span><span className="w-1.5 h-1.5 bg-indigo-400 rounded-full" style={{animationDelay:'0.15s'}}></span><span className="w-1.5 h-1.5 bg-indigo-400 rounded-full" style={{animationDelay:'0.3s'}}></span></div></div>
+                                            ) : (
+                                                <div className={`px-5 py-3.5 rounded-2xl max-w-[85%] text-[15px] leading-relaxed shadow-md
+                                                    ${msg.role === 'user' 
+                                                    ? 'bg-white text-slate-700 border border-white/60 rounded-tr-none' 
+                                                    : `text-white rounded-tl-none bg-gradient-to-br ${blockOrder[currentBlockIndex] === 'AI' ? "from-indigo-500 to-violet-500" : "from-amber-500 to-orange-500"}`
+                                                    }`}>{msg.text}</div>
+                                            )}
+                                        </div>
+                                    ))}
+                                    <div className="h-20"></div>
+                                    <div ref={chatEndRef} />
+                                    </div>
+                                </div>
+                                <div className="p-5 bg-white/80 backdrop-blur-lg border-t border-white/50 shrink-0 z-20">
+                                    {sessionPhase === 'SELECTION' && (
+                                    <div className="animate-fade-up">
+                                        <p className="text-center text-xs text-indigo-900/60 mb-3 font-semibold uppercase tracking-wide">请从下方选择一个话题...</p>
+                                        <div className="grid grid-cols-1 gap-2.5">
+                                        {currentChoices.map(topic => (
+                                            <button key={topic.id} onClick={() => handleTopicSelection(topic)} className="bg-white hover:bg-indigo-50 p-3.5 rounded-xl text-left transition hover:-translate-y-0.5 hover:shadow-md border border-indigo-100/50 group w-full">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-lg">{topic.optionLabel.split(" ")[0]}</span>
+                                                <div className="flex flex-col overflow-hidden">
+                                                    <span className="text-sm font-bold text-slate-700 group-hover:text-indigo-600 truncate">{topic.optionLabel.split(" ").slice(1).join(" ")}</span>
+                                                    <span className="text-xs text-slate-400 truncate w-full">{topic.userText}</span>
+                                                </div>
+                                            </div>
+                                            </button>
+                                        ))}
+                                        </div>
+                                    </div>
+                                    )}
+                                    {sessionPhase === 'RATING' && (
+                                    <div className="animate-pop-in">
+                                        <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-200/60">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">请评价此回复</span>
+                                        <span className="text-[10px] text-indigo-500 font-bold bg-indigo-50 px-2 py-0.5 rounded-full">进度 {trialsInBlock + 1} / {TRIALS_PER_BLOCK}</span>
+                                        </div>
+                                        <div className="space-y-2">
+                                        <CompactSlider label="🧠 理解程度" description="理解是否准确？" value={cognitiveVal} onChange={setCognitiveVal} minLabel="没懂" maxLabel="懂我" color="indigo"/>
+                                        <CompactSlider label="❤️ 情感温度" description="是否感到温暖？" value={affectiveVal} onChange={setAffectiveVal} minLabel="冰冷" maxLabel="温暖" color="violet"/>
+                                        </div>
+                                        
+                                        <button 
+                                            onClick={submitRating} 
+                                            className="w-full mt-5 py-3.5 rounded-xl font-bold text-sm shadow-lg transition active:scale-95 bg-slate-900 hover:bg-black text-white cursor-pointer">
+                                            提交评价
+                                        </button>
+                                    </div>
+                                    )}
+                                    {sessionPhase === 'TYPING' && <div className="h-12 flex items-center justify-center text-xs text-slate-400 italic">对方正在输入...</div>}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {appStage === 'TURING_INTRO' && (
+                        <div className="glass-card p-10 max-w-md text-center shadow-2xl rounded-3xl animate-pop-in">
+                            <div className="text-6xl mb-6">🕵️‍♀️</div>
+                            <h2 className="text-2xl font-bold text-slate-800 mb-4">最后的挑战</h2>
+                            <p className="text-slate-600 mb-6 font-medium">其实，刚才看到的身份标签（AI/咨询师）可能是具有误导性的，身份和回答不一定是完全匹配的。</p>
+                            <div className="bg-red-50 p-4 rounded-xl text-sm text-red-800 mb-8 border border-red-100 shadow-inner font-medium">
+                            我们从刚才的对话中随机抽取了 6 条。请凭直觉猜测：这句话到底是谁写的？
+                            </div>
+                            <button onClick={() => setAppStage('TURING_TEST')} className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold shadow-lg shadow-red-200 transition transform hover:-translate-y-0.5">开始猜测</button>
+                        </div>
+                    )}
+
+                    {appStage === 'TURING_TEST' && (
+                        <div className="glass-card p-8 max-w-lg w-full shadow-2xl rounded-3xl animate-pop-in">
+                            <div className="text-center mb-6 border-b pb-4 border-slate-100">
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">第 {turingIndex + 1} / {turingData.length} 题</span>
+                            <h3 className="text-xl font-bold text-slate-800 mt-2">你觉得这是谁写的？</h3>
+                            </div>
+                            <div className="flex flex-col gap-4 mb-8">
+                                <div className="bg-slate-100 text-slate-600 px-5 py-4 rounded-2xl rounded-tl-none text-sm self-start max-w-[90%] font-medium">{turingData[turingIndex].userText}</div>
+                                <div className="bg-slate-800 text-slate-100 px-5 py-4 rounded-2xl rounded-tr-none text-sm shadow-md self-end max-w-[90%] leading-relaxed">{turingData[turingIndex].agentReply}</div>
+                            </div>
+                            <div className="flex gap-4">
+                            <button onClick={() => handleTuringGuess('AI')} className="flex-1 py-4 bg-white border border-slate-200 hover:border-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-2xl font-bold shadow-sm transition group">
+                                <span className="block text-2xl mb-1 group-hover:scale-110 transition-transform">🤖</span>
+                                像是 AI
+                            </button>
+                            <button onClick={() => handleTuringGuess('HUMAN')} className="flex-1 py-4 bg-white border border-slate-200 hover:border-amber-500 hover:text-amber-600 hover:bg-amber-50 rounded-2xl font-bold shadow-sm transition group">
+                                <span className="block text-2xl mb-1 group-hover:scale-110 transition-transform">👨‍⚕️</span>
+                                像是 人类
+                            </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 问卷阶段 (调整位置到最后) */}
+                    {appStage === 'SURVEY' && (
+                        <div className="glass-card p-8 max-w-lg w-full shadow-xl rounded-3xl animate-pop-in overflow-y-auto max-h-[85vh] scrollbar-hide">
+                            <h2 className="text-xl font-bold text-slate-800 mb-2 text-center">📋 最后一步</h2>
+                            <p className="text-slate-500 text-xs mb-6 text-center">请评价以下观点，提交后数据将自动上传</p>
+                            
+                            <div className="space-y-6">
+                                {SURVEY_QUESTIONS.map((q, idx) => (
+                                    <div key={q.id} className="animate-fade-up" style={{animationDelay: idx * 0.1 + 's'}}>
+                                        <p className="text-sm font-bold text-slate-700 mb-3">{idx + 1}. {q.text}</p>
+                                        <div className="flex justify-between items-center bg-white/50 p-2 rounded-xl">
+                                            {[1, 2, 3, 4, 5].map((score) => (
+                                                <label key={score} className="flex flex-col items-center cursor-pointer group flex-1">
+                                                    <input 
+                                                        type="radio" 
+                                                        name={q.id} 
+                                                        value={score} 
+                                                        className="peer sr-only"
+                                                        onChange={() => setSurveyData({...surveyData, [q.id]: score})}
+                                                        checked={surveyData[q.id] === score}
+                                                    />
+                                                    <div className="w-8 h-8 rounded-full border-2 border-indigo-200 flex items-center justify-center text-sm font-bold text-slate-400 peer-checked:bg-indigo-500 peer-checked:text-white peer-checked:border-indigo-500 transition-all group-hover:border-indigo-400">
+                                                        {score}
+                                                    </div>
+                                                    <span className="text-[10px] text-slate-400 mt-1 opacity-0 peer-checked:opacity-100 transition-opacity font-medium h-3">
+                                                        {score===1?"不同意":score===5?"同意":""}
+                                                    </span>
+                                                </label>
+                                            ))}
+                                        </div>
                                     </div>
                                 ))}
-                                <div className="h-20"></div>
-                                <div ref={chatEndRef} />
-                                </div>
                             </div>
-                            <div className="p-5 bg-white/80 backdrop-blur-lg border-t border-white/50 shrink-0 z-20">
-                                {sessionPhase === 'SELECTION' && (
-                                <div className="animate-fade-up">
-                                    <p className="text-center text-xs text-indigo-900/60 mb-3 font-semibold uppercase tracking-wide">请从下方选择一个话题...</p>
-                                    <div className="grid grid-cols-1 gap-2.5">
-                                    {currentChoices.map(topic => (
-                                        <button key={topic.id} onClick={() => handleTopicSelection(topic)} className="bg-white hover:bg-indigo-50 p-3.5 rounded-xl text-left transition hover:-translate-y-0.5 hover:shadow-md border border-indigo-100/50 group w-full">
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-lg">{topic.optionLabel.split(" ")[0]}</span>
-                                            <div className="flex flex-col overflow-hidden">
-                                                <span className="text-sm font-bold text-slate-700 group-hover:text-indigo-600 truncate">{topic.optionLabel.split(" ").slice(1).join(" ")}</span>
-                                                <span className="text-xs text-slate-400 truncate w-full">{topic.userText}</span>
-                                            </div>
-                                        </div>
-                                        </button>
-                                    ))}
-                                    </div>
-                                </div>
-                                )}
-                                {sessionPhase === 'RATING' && (
-                                <div className="animate-pop-in">
-                                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-200/60">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">请评价此回复</span>
-                                    <span className="text-[10px] text-indigo-500 font-bold bg-indigo-50 px-2 py-0.5 rounded-full">进度 {trialsInBlock + 1} / {TRIALS_PER_BLOCK}</span>
-                                    </div>
-                                    <div className="space-y-2">
-                                    <CompactSlider label="🧠 理解程度" description="理解是否准确？" value={cognitiveVal} onChange={setCognitiveVal} minLabel="没懂" maxLabel="懂我" color="indigo"/>
-                                    <CompactSlider label="❤️ 情感温度" description="是否感到温暖？" value={affectiveVal} onChange={setAffectiveVal} minLabel="冰冷" maxLabel="温暖" color="violet"/>
-                                    </div>
-                                    
-                                    <button 
-                                        onClick={submitRating} 
-                                        className="w-full mt-5 py-3.5 rounded-xl font-bold text-sm shadow-lg transition active:scale-95 bg-slate-900 hover:bg-black text-white cursor-pointer">
-                                        提交评价
-                                    </button>
-                                </div>
-                                )}
-                                {sessionPhase === 'TYPING' && <div className="h-12 flex items-center justify-center text-xs text-slate-400 italic">对方正在输入...</div>}
-                            </div>
-                        </div>
-                    </div>
-                )}
 
-                {appStage === 'TURING_INTRO' && (
-                    <div className="glass-card p-10 max-w-md text-center shadow-2xl rounded-3xl animate-pop-in">
-                        <div className="text-6xl mb-6">🕵️‍♀️</div>
-                        <h2 className="text-2xl font-bold text-slate-800 mb-4">最后的挑战</h2>
-                        <p className="text-slate-600 mb-6 font-medium">其实，刚才看到的身份标签（AI/咨询师）可能是具有误导性的，身份和回答不一定是完全匹配的。</p>
-                        <div className="bg-red-50 p-4 rounded-xl text-sm text-red-800 mb-8 border border-red-100 shadow-inner font-medium">
-                        我们从刚才的对话中随机抽取了 6 条。请凭直觉猜测：这句话到底是谁写的？
+                            <button 
+                                onClick={handleSurveySubmit} 
+                                className="w-full mt-8 py-3.5 bg-slate-800 hover:bg-black text-white rounded-xl font-bold shadow-lg transition transform active:scale-95"
+                            >
+                                提交并结束实验
+                            </button>
                         </div>
-                        <button onClick={() => setAppStage('TURING_TEST')} className="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold shadow-lg shadow-red-200 transition transform hover:-translate-y-0.5">开始猜测</button>
-                    </div>
-                )}
+                    )}
 
-                {appStage === 'TURING_TEST' && (
-                    <div className="glass-card p-8 max-w-lg w-full shadow-2xl rounded-3xl animate-pop-in">
-                        <div className="text-center mb-6 border-b pb-4 border-slate-100">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">第 {turingIndex + 1} / {turingData.length} 题</span>
-                        <h3 className="text-xl font-bold text-slate-800 mt-2">你觉得这是谁写的？</h3>
+                    {appStage === 'END' && (
+                        <div className="glass-card p-10 text-center shadow-2xl rounded-3xl animate-pop-in">
+                            <h2 className="text-3xl font-bold text-emerald-500 mb-2">🎉 实验结束</h2>
+                            <p className="text-slate-500 mb-8 font-medium">数据已自动安全上传，非常感谢您的参与。</p>
+                            <div className="text-xs text-slate-400">您可以直接关闭此页面。</div>
                         </div>
-                        <div className="flex flex-col gap-4 mb-8">
-                            <div className="bg-slate-100 text-slate-600 px-5 py-4 rounded-2xl rounded-tl-none text-sm self-start max-w-[90%] font-medium">{turingData[turingIndex].userText}</div>
-                            <div className="bg-slate-800 text-slate-100 px-5 py-4 rounded-2xl rounded-tr-none text-sm shadow-md self-end max-w-[90%] leading-relaxed">{turingData[turingIndex].agentReply}</div>
-                        </div>
-                        <div className="flex gap-4">
-                        <button onClick={() => handleTuringGuess('AI')} className="flex-1 py-4 bg-white border border-slate-200 hover:border-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-2xl font-bold shadow-sm transition group">
-                            <span className="block text-2xl mb-1 group-hover:scale-110 transition-transform">🤖</span>
-                            像是 AI
-                        </button>
-                        <button onClick={() => handleTuringGuess('HUMAN')} className="flex-1 py-4 bg-white border border-slate-200 hover:border-amber-500 hover:text-amber-600 hover:bg-amber-50 rounded-2xl font-bold shadow-sm transition group">
-                            <span className="block text-2xl mb-1 group-hover:scale-110 transition-transform">👨‍⚕️</span>
-                            像是 人类
-                        </button>
-                        </div>
-                    </div>
-                )}
-
-                {appStage === 'END' && (
-                    <div className="glass-card p-10 text-center shadow-2xl rounded-3xl animate-pop-in">
-                        <h2 className="text-3xl font-bold text-emerald-500 mb-2">🎉 实验结束</h2>
-                        <p className="text-slate-500 mb-8 font-medium">数据已自动上传，感谢参与。</p>
-                        <div className="text-xs text-slate-400">您可以直接关闭此页面。</div>
-                    </div>
-                )}
+                    )}
+                </div>
             </>
           );
         };
