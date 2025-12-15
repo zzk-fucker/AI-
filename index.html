@@ -56,12 +56,12 @@
         background-attachment: fixed;
         margin: 0; overflow: hidden;
         -webkit-font-smoothing: antialiased;
-        /* 保持之前调整好的居中布局 */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        width: 100vw;
+
+        /* --- 严格保留你要求的缩放设置 --- */
+        zoom: 0.9; 
+        -moz-transform: scale(0.9);
+        -moz-transform-origin: center top;
+        width: 100%;
       }
       .glass-card {
         background: rgba(255, 255, 255, 0.85);
@@ -85,7 +85,7 @@
       }
     </style>
 </head>
-<body>
+<body class="h-screen w-screen flex items-center justify-center font-sans text-slate-800">
 
     <!-- 背景光斑动画 -->
     <div class="fixed inset-0 -z-10 pointer-events-none">
@@ -94,8 +94,8 @@
         <div class="absolute bottom-0 left-20 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
     </div>
 
-    <!-- 保持 scale-90 和居中 -->
-    <div id="root" class="w-full h-full flex items-center justify-center p-4 scale-90 origin-center transition-transform duration-300"></div>
+    <!-- 根节点 -->
+    <div id="root" class="w-full h-full flex items-center justify-center p-4"></div>
 
     <script type="text/babel">
         // 初始化 jsPsych
@@ -112,7 +112,7 @@
         const TRIALS_PER_BLOCK = 10; 
         const BGM_URL = "./bgm.mp3"; 
 
-        // --- 唯一修改：问卷题目 (AI 接受度量表) ---
+        // --- 唯一改动：问卷题目更新为“一般态度量表” ---
         const SURVEY_QUESTIONS = [
             // 1. 总体开放度
             { id: "q1", text: "在日常生活中，我是一个乐于尝试 AI 新技术（如 ChatGPT）的人。", type: "scale" },
@@ -461,7 +461,7 @@
           };
 
           // --- UI 渲染 ---
-          // 保持之前完美居中的布局
+          // 根容器
           return (
             <>
                 <SettingsPanel 
@@ -471,7 +471,7 @@
                     toggleSfx={() => setSfxOn(!sfxOn)} 
                 />
 
-                <div className="w-full h-full flex items-center justify-center transform scale-90 origin-center transition-transform duration-300">
+                <div id="root" class="w-full h-full flex items-center justify-center p-4">
                     
                     {appStage === 'WELCOME' && (
                         <div className="glass-card p-10 max-w-lg text-center shadow-xl border border-white/60 rounded-3xl animate-pop-in">
