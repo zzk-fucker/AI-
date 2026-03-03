@@ -35,7 +35,7 @@ function initDatabase() {
         interactions TEXT NOT NULL,
         turing_test TEXT NOT NULL,
         survey TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at DATETIME DEFAULT (datetime('now', 'localtime'))
     )`);
 
     // 管理员表
@@ -43,13 +43,13 @@ function initDatabase() {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at DATETIME DEFAULT (datetime('now', 'localtime'))
     )`, (err) => {
         if (!err) {
-            // 创建默认管理员账号 (admin/admin123)
-            const hashedPassword = bcrypt.hashSync('admin123', 10);
+            // 创建默认管理员账号 (woshizhazhakun/Aa20060324)
+            const hashedPassword = bcrypt.hashSync('Aa20060324', 10);
             db.run(`INSERT OR IGNORE INTO admins (username, password) VALUES (?, ?)`,
-                ['admin', hashedPassword]);
+                ['woshizhazhakun', hashedPassword]);
         }
     });
 }

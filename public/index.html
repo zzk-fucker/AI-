@@ -294,8 +294,17 @@
           const audioRef = useRef(null);
 
           // 新增：上传数据函数
-          const uploadData = async (finalInteractions, finalTuringData, finalSurveyData) => {
+          const uploadData = async (finalStudentId, finalInteractions, finalTuringData, finalSurveyData) => {
               console.log("Starting data upload...");
+              console.log("Student ID:", finalStudentId);
+              console.log("API URL:", API_URL);
+              console.log("Data to upload:", {
+                  student_id: finalStudentId,
+                  interactions: finalInteractions,
+                  turing_test: finalTuringData,
+                  survey: finalSurveyData
+              });
+
               try {
                   const response = await fetch(`${API_URL}/submit`, {
                       method: 'POST',
@@ -303,22 +312,27 @@
                           'Content-Type': 'application/json',
                       },
                       body: JSON.stringify({
-                          student_id: studentId, // 添加学号
+                          student_id: finalStudentId,
                           interactions: finalInteractions,
                           turing_test: finalTuringData,
                           survey: finalSurveyData
                       })
                   });
 
+                  console.log("Response status:", response.status);
+                  console.log("Response ok:", response.ok);
+
                   if (!response.ok) {
-                      throw new Error('Upload failed');
+                      const errorText = await response.text();
+                      console.error("Server error:", errorText);
+                      throw new Error(`Upload failed: ${response.status} - ${errorText}`);
                   }
 
                   const data = await response.json();
                   console.log("Upload Success:", data);
               } catch (error) {
                   console.error("Upload Failed:", error);
-                  alert('数据上传失败，请检查网络连接');
+                  alert('数据上传失败：' + error.message + '\n请打开浏览器控制台查看详细错误信息');
               }
           };
 
@@ -472,9 +486,9 @@
                   alert("请先完成所有题目哦");
                   return;
               }
-              
-              // 提交问卷后，统一上传数据
-              uploadData(interactions, turingData, surveyData);
+
+              // 提交问卷后，统一上传数据（传递 studentId）
+              uploadData(studentId, interactions, turingData, surveyData);
               setAppStage('END');
           };
 

@@ -1,0 +1,25 @@
+# 依赖
+node_modules/
+
+# 数据库
+*.db
+*.db-journal
+
+# 日志
+*.log
+npm-debug.log*
+
+# 压缩包
+*.tar.gz
+*.zip
+
+# 临时文件
+nul
+*.tmp
+
+# 环境变量
+.env
+.env.local
+
+# 锁文件
+package-lock.json
