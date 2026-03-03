@@ -44,8 +44,7 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Supabase SDK -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <!-- 不再需要 Supabase SDK -->
 
     <!-- 3. 字体 -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -115,11 +114,9 @@
         // 初始化 jsPsych
         const jsPsych = initJsPsych();
 
-        // --- Supabase 配置 ---
-        const supabaseUrl = 'https://zhhchgkusqcplljrqqut.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoaGNoZ2t1c3FjcGxsanJxcXV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODI5MTIsImV4cCI6MjA4MDI1ODkxMn0.jmX-Tm9hCxqh5g-rUZTzzEUvg2IJBEySm1XAJ08t-f4';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        
+        // --- API 配置 ---
+        const API_URL = window.location.origin + '/api';
+
         const { useState, useEffect, useRef } = React;
 
         // --- 配置 ---
@@ -271,6 +268,7 @@
 
         const App = () => {
           const [appStage, setAppStage] = useState('WELCOME');
+          const [studentId, setStudentId] = useState(''); // 新增：学号状态
           const [blockOrder, setBlockOrder] = useState([]);
           const [currentBlockIndex, setCurrentBlockIndex] = useState(0);
           const [trialsInBlock, setTrialsInBlock] = useState(0);
@@ -299,22 +297,28 @@
           const uploadData = async (finalInteractions, finalTuringData, finalSurveyData) => {
               console.log("Starting data upload...");
               try {
-                  const { data, error } = await supabase
-                      .from('experiment_results')
-                      .insert({
+                  const response = await fetch(`${API_URL}/submit`, {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                          student_id: studentId, // 添加学号
                           interactions: finalInteractions,
                           turing_test: finalTuringData,
-                          survey: finalSurveyData // 上传问卷数据
-                      });
-                  
-                  if (error) {
-                      console.error("Supabase Error:", error);
-                      throw error;
+                          survey: finalSurveyData
+                      })
+                  });
+
+                  if (!response.ok) {
+                      throw new Error('Upload failed');
                   }
+
+                  const data = await response.json();
                   console.log("Upload Success:", data);
               } catch (error) {
                   console.error("Upload Failed:", error);
-                  // 可以在这里添加失败重试或提示
+                  alert('数据上传失败，请检查网络连接');
               }
           };
 
@@ -500,7 +504,36 @@
                                 <li>收到回复后，请凭直觉评价理解度和温度。</li>
                             </ul>
                             </div>
-                            <button onClick={initExperiment} className="w-full py-4 bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 transition transform hover:-translate-y-0.5 active:scale-95">开始实验</button>
+                            <button onClick={() => setAppStage('STUDENT_ID')} className="w-full py-4 bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 transition transform hover:-translate-y-0.5 active:scale-95">开始实验</button>
+                        </div>
+                    )}
+
+                    {appStage === 'STUDENT_ID' && (
+                        <div className="glass-card p-10 max-w-lg text-center shadow-xl border border-white/60 rounded-3xl animate-pop-in">
+                            <div className="text-6xl mb-6">🎓</div>
+                            <h1 className="text-3xl font-bold text-slate-800 mb-2">请输入您的学号</h1>
+                            <p className="text-slate-500 mb-8 font-medium">学号将作为您的唯一标识，请确保输入正确。</p>
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                const input = document.getElementById('studentIdInput').value.trim();
+                                if (!input) {
+                                    alert('请输入学号');
+                                    return;
+                                }
+                                setStudentId(input);
+                                initExperiment();
+                            }} className="space-y-6">
+                                <input
+                                    type="text"
+                                    id="studentIdInput"
+                                    placeholder="请输入学号"
+                                    className="w-full px-6 py-4 text-lg border-2 border-indigo-200 rounded-xl focus:border-indigo-500 focus:outline-none transition text-center font-semibold"
+                                    required
+                                />
+                                <button type="submit" className="w-full py-4 bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 transition transform hover:-translate-y-0.5 active:scale-95">
+                                    确认并继续
+                                </button>
+                            </form>
                         </div>
                     )}
 

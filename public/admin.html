@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实验数据管理后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <div id="app"></div>
+
+    <script>
+        const API_URL = window.location.origin + '/api';
+        let authToken = localStorage.getItem('adminToken');
+        let currentData = [];
+
+        // 登录页面
+        function renderLogin() {
+            document.getElementById('app').innerHTML = `
+                <div class="min-h-screen flex items-center justify-center p-4">
+                    <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md fade-in">
+                        <div class="text-center mb-8">
+                            <div class="inline-block p-4 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full mb-4">
+                                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                            </div>
+                            <h1 class="text-3xl font-bold text-gray-800">管理员登录</h1>
+                            <p class="text-gray-500 mt-2">实验数据管理系统</p>
+                        </div>
+                        <form id="loginForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">用户名</label>
+                                <input type="text" id="username"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                    placeholder="请输入用户名" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                                <input type="password" id="password"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                    placeholder="请输入密码" required>
+                            </div>
+                            <button type="submit"
+                                class="w-full gradient-bg text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition">
+                                登录
+                            </button>
+                        </form>
+                        <div id="loginError" class="mt-4 text-red-500 text-sm text-center hidden"></div>
+                        <div class="mt-6 text-center">
+                            <p class="text-sm text-gray-500">默认账号: <span class="font-semibold">admin</span> / <span class="font-semibold">admin123</span></p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                try {
+                    const response = await fetch(`${API_URL}/admin/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+
+                    if (!response.ok) throw new Error('登录失败');
+
+                    const data = await response.json();
+                    authToken = data.token;
+                    localStorage.setItem('adminToken', authToken);
+                    renderDashboard();
+                } catch (error) {
+                    document.getElementById('loginError').textContent = '用户名或密码错误';
+                    document.getElementById('loginError').classList.remove('hidden');
+                }
+            });
+        }
+
+        // 仪表板页面
+        function renderDashboard() {
+            document.getElementById('app').innerHTML = `
+                <div class="min-h-screen">
+                    <!-- 顶部导航栏 -->
+                    <nav class="gradient-bg shadow-lg">
+                        <div class="container mx-auto px-6 py-4">
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center space-x-3">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    <h1 class="text-2xl font-bold text-white">实验数据管理系统</h1>
+                                </div>
+                                <button onclick="logout()"
+                                    class="bg-white/20 hover:bg-white/30 text-white px-6 py-2 rounded-lg font-semibold transition backdrop-blur-sm">
+                                    退出登录
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <!-- 主内容区 -->
+                    <div class="container mx-auto px-6 py-8">
+                        <!-- 统计卡片 -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-white rounded-xl shadow-md p-6 fade-in">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-500 text-sm font-medium">总实验数</p>
+                                        <p id="totalCount" class="text-3xl font-bold text-gray-800 mt-2">0</p>
+                                    </div>
+                                    <div class="p-3 bg-blue-100 rounded-full">
+                                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-md p-6 fade-in" style="animation-delay: 0.1s">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-500 text-sm font-medium">今日新增</p>
+                                        <p id="todayCount" class="text-3xl font-bold text-gray-800 mt-2">0</p>
+                                    </div>
+                                    <div class="p-3 bg-green-100 rounded-full">
+                                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-md p-6 fade-in" style="animation-delay: 0.2s">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-500 text-sm font-medium">最新提交</p>
+                                        <p id="latestTime" class="text-sm font-semibold text-gray-800 mt-2">--</p>
+                                    </div>
+                                    <div class="p-3 bg-purple-100 rounded-full">
+                                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 数据表格 -->
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden fade-in" style="animation-delay: 0.3s">
+                            <div class="p-6 border-b border-gray-200">
+                                <div class="flex justify-between items-center">
+                                    <h2 class="text-xl font-bold text-gray-800">实验数据列表</h2>
+                                    <button onclick="exportData()"
+                                        class="bg-green-500 hover:bg-green-600 text-white px-6 py-2.5 rounded-lg font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition flex items-center space-x-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        <span>导出 Excel</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="dataTable" class="overflow-x-auto">
+                                <div class="p-8 text-center">
+                                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                                    <p class="text-gray-500 mt-4">加载中...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            loadData();
+        }
+
+        // 加载数据
+        async function loadData() {
+            try {
+                const response = await fetch(`${API_URL}/admin/results`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to load data');
+
+                currentData = await response.json();
+                updateStats(currentData);
+                renderTable(currentData);
+            } catch (error) {
+                console.error('Load data error:', error);
+                document.getElementById('dataTable').innerHTML = '<div class="p-8 text-center text-red-500">加载数据失败</div>';
+            }
+        }
+
+        // 更新统计数据
+        function updateStats(data) {
+            document.getElementById('totalCount').textContent = data.length;
+
+            const today = new Date().toISOString().split('T')[0];
+            const todayCount = data.filter(row => row.created_at.startsWith(today)).length;
+            document.getElementById('todayCount').textContent = todayCount;
+
+            if (data.length > 0) {
+                const latest = data[0].created_at;
+                document.getElementById('latestTime').textContent = latest;
+            }
+        }
+
+        // 渲染表格
+        function renderTable(data) {
+            if (data.length === 0) {
+                document.getElementById('dataTable').innerHTML = `
+                    <div class="p-12 text-center">
+                        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                        </svg>
+                        <p class="text-gray-500 text-lg">暂无数据</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">学号</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">提交时间</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">交互次数</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">图灵测试</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">问卷</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+            `;
+
+            data.forEach(row => {
+                const interactions = JSON.parse(row.interactions);
+                const turingTest = JSON.parse(row.turing_test);
+                const survey = JSON.parse(row.survey);
+
+                html += `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm font-semibold text-indigo-600">${row.student_id}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm text-gray-600">${row.created_at}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                ${interactions.length} 次
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                ${turingTest.length} 题
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                ${Object.keys(survey).length} 题
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <button onclick="deleteData(${row.id})"
+                                class="text-red-600 hover:text-red-800 font-semibold hover:underline transition">
+                                删除
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('dataTable').innerHTML = html;
+        }
+
+        // 删除数据
+        async function deleteData(id) {
+            if (!confirm('确定要删除这条数据吗？此操作不可恢复！')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/admin/results/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (!response.ok) throw new Error('删除失败');
+
+                alert('删除成功');
+                loadData(); // 重新加载数据
+            } catch (error) {
+                alert('删除失败：' + error.message);
+            }
+        }
+
+        // 导出数据
+        async function exportData() {
+            try {
+                const response = await fetch(`${API_URL}/admin/export`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (!response.ok) throw new Error('Export failed');
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `experiment_data_${new Date().toISOString().split('T')[0]}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (error) {
+                alert('导出失败');
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('adminToken');
+                authToken = null;
+                renderLogin();
+            }
+        }
+
+        // 初始化
+        if (authToken) {
+            renderDashboard();
+        } else {
+            renderLogin();
+        }
+    </script>
+</body>
+</html>
