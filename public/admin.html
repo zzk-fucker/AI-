@@ -59,9 +59,6 @@
                             </button>
                         </form>
                         <div id="loginError" class="mt-4 text-red-500 text-sm text-center hidden"></div>
-                        <div class="mt-6 text-center">
-                            <p class="text-sm text-gray-500">默认账号: <span class="font-semibold">woshizhazhakun</span> / <span class="font-semibold">Aa20060324</span></p>
-                        </div>
                     </div>
                 </div>
             `;
@@ -238,6 +235,7 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">学号</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">姓名</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">提交时间</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">交互次数</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">图灵测试</th>
@@ -257,6 +255,9 @@
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="text-sm font-semibold text-indigo-600">${row.student_id}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm font-semibold text-gray-800">${row.student_name || '-'}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="text-sm text-gray-600">${row.created_at}</span>

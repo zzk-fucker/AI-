@@ -32,6 +32,7 @@ function initDatabase() {
     db.run(`CREATE TABLE IF NOT EXISTS experiment_results (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         student_id TEXT NOT NULL,
+        student_name TEXT NOT NULL DEFAULT '',
         interactions TEXT NOT NULL,
         turing_test TEXT NOT NULL,
         survey TEXT NOT NULL,
@@ -50,6 +51,16 @@ function initDatabase() {
             const hashedPassword = bcrypt.hashSync('Aa20060324', 10);
             db.run(`INSERT OR IGNORE INTO admins (username, password) VALUES (?, ?)`,
                 ['woshizhazhakun', hashedPassword]);
+        }
+    });
+
+    // 迁移：如果 student_name 列不存在则添加
+    db.all("PRAGMA table_info(experiment_results)", [], (err, columns) => {
+        if (!err && columns) {
+            const hasNameColumn = columns.some(col => col.name === 'student_name');
+            if (!hasNameColumn) {
+                db.run(`ALTER TABLE experiment_results ADD COLUMN student_name TEXT NOT NULL DEFAULT ''`);
+            }
         }
     });
 }
@@ -76,16 +87,17 @@ const authenticateToken = (req, res, next) => {
 
 // 提交实验数据
 app.post('/api/submit', (req, res) => {
-    const { student_id, interactions, turing_test, survey } = req.body;
+    const { student_id, student_name, interactions, turing_test, survey } = req.body;
 
-    if (!student_id || !interactions || !turing_test || !survey) {
+    if (!student_id || !student_name || !interactions || !turing_test || !survey) {
         return res.status(400).json({ error: 'Missing required data' });
     }
 
-    const sql = `INSERT INTO experiment_results (student_id, interactions, turing_test, survey) VALUES (?, ?, ?, ?)`;
+    const sql = `INSERT INTO experiment_results (student_id, student_name, interactions, turing_test, survey) VALUES (?, ?, ?, ?, ?)`;
 
     db.run(sql, [
         student_id,
+        student_name,
         JSON.stringify(interactions),
         JSON.stringify(turing_test),
         JSON.stringify(survey)
@@ -145,6 +157,7 @@ app.get('/api/admin/export', authenticateToken, (req, res) => {
 
             return {
                 '学号': row.student_id,
+                '姓名': row.student_name,
                 '提交时间': row.created_at,
                 '交互数据': JSON.stringify(interactions),
                 '图灵测试': JSON.stringify(turingTest),

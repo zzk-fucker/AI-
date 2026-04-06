@@ -269,6 +269,7 @@
         const App = () => {
           const [appStage, setAppStage] = useState('WELCOME');
           const [studentId, setStudentId] = useState(''); // 新增：学号状态
+          const [studentName, setStudentName] = useState(''); // 新增：姓名状态
           const [blockOrder, setBlockOrder] = useState([]);
           const [currentBlockIndex, setCurrentBlockIndex] = useState(0);
           const [trialsInBlock, setTrialsInBlock] = useState(0);
@@ -294,12 +295,13 @@
           const audioRef = useRef(null);
 
           // 新增：上传数据函数
-          const uploadData = async (finalStudentId, finalInteractions, finalTuringData, finalSurveyData) => {
+          const uploadData = async (finalStudentId, finalStudentName, finalInteractions, finalTuringData, finalSurveyData) => {
               console.log("Starting data upload...");
               console.log("Student ID:", finalStudentId);
               console.log("API URL:", API_URL);
               console.log("Data to upload:", {
                   student_id: finalStudentId,
+                  student_name: finalStudentName,
                   interactions: finalInteractions,
                   turing_test: finalTuringData,
                   survey: finalSurveyData
@@ -313,6 +315,7 @@
                       },
                       body: JSON.stringify({
                           student_id: finalStudentId,
+                          student_name: finalStudentName,
                           interactions: finalInteractions,
                           turing_test: finalTuringData,
                           survey: finalSurveyData
@@ -488,7 +491,7 @@
               }
 
               // 提交问卷后，统一上传数据（传递 studentId）
-              uploadData(studentId, interactions, turingData, surveyData);
+              uploadData(studentId, studentName, interactions, turingData, surveyData);
               setAppStage('END');
           };
 
@@ -525,22 +528,35 @@
                     {appStage === 'STUDENT_ID' && (
                         <div className="glass-card p-10 max-w-lg text-center shadow-xl border border-white/60 rounded-3xl animate-pop-in">
                             <div className="text-6xl mb-6">🎓</div>
-                            <h1 className="text-3xl font-bold text-slate-800 mb-2">请输入您的学号</h1>
-                            <p className="text-slate-500 mb-8 font-medium">学号将作为您的唯一标识，请确保输入正确。</p>
+                            <h1 className="text-3xl font-bold text-slate-800 mb-2">请输入您的学号和姓名</h1>
+                            <p className="text-slate-500 mb-8 font-medium">学号和姓名将作为您的唯一标识，请确保输入正确。</p>
                             <form onSubmit={(e) => {
                                 e.preventDefault();
-                                const input = document.getElementById('studentIdInput').value.trim();
-                                if (!input) {
+                                const idInput = document.getElementById('studentIdInput').value.trim();
+                                const nameInput = document.getElementById('studentNameInput').value.trim();
+                                if (!idInput) {
                                     alert('请输入学号');
                                     return;
                                 }
-                                setStudentId(input);
+                                if (!nameInput) {
+                                    alert('请输入姓名');
+                                    return;
+                                }
+                                setStudentId(idInput);
+                                setStudentName(nameInput);
                                 initExperiment();
                             }} className="space-y-6">
                                 <input
                                     type="text"
                                     id="studentIdInput"
                                     placeholder="请输入学号"
+                                    className="w-full px-6 py-4 text-lg border-2 border-indigo-200 rounded-xl focus:border-indigo-500 focus:outline-none transition text-center font-semibold"
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    id="studentNameInput"
+                                    placeholder="请输入姓名"
                                     className="w-full px-6 py-4 text-lg border-2 border-indigo-200 rounded-xl focus:border-indigo-500 focus:outline-none transition text-center font-semibold"
                                     required
                                 />
